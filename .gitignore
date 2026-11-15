@@ -1,0 +1,28 @@
+# Logs and Temporary Artifacts
+*.log
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+.DS_Store
+Thumbs.db
+
+# Dependencies & Build Output
+node_modules/
+dist/
+.cache/
+.vite/
+
+# Environment and Local Overrides
+.env
+.env.local
+.env.*.local
+
+# Internal Team Development & Prompt Files (High Risk / Internal Reference)
+HANDOFF.md
+DESIGN.md
+SUBMISSION.md
+
+# Internal Team Working & Preparation Docs (Not for Judges)
+docs/CLAIMS_AUDIT.md
+docs/DEMO.md
+docs/SUBMISSION_CHECKLIST.md

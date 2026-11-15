@@ -1,0 +1,58 @@
+{
+  "night-lights": {
+    "file": "/media/night-lights-frame.jpg",
+    "type": "image"
+  },
+  "sea-currents-temperature": {
+    "file": "/media/sea-currents.webm",
+    "type": "video"
+  },
+  "geos-aerosols": {
+    "file": "/media/geos-aerosols.jpg",
+    "type": "image"
+  },
+  "air-quality": {
+    "file": "/media/air-quality-frame.jpg",
+    "type": "image"
+  },
+  "perpetual-ocean-2": {
+    "file": "/media/perpetual-ocean-2-frame.jpg",
+    "type": "image"
+  },
+  "co2-dyamond": {
+    "file": "/media/co2-dyamond-frame.jpg",
+    "type": "image"
+  },
+  "iss-lightning": {
+    "file": "/media/iss-lightning-frame.jpg",
+    "type": "image"
+  },
+  "atmospheric-river": {
+    "file": "/media/atmospheric-river-frame.jpg",
+    "type": "image"
+  },
+  "gedi-forest-height": {
+    "file": "/media/gedi-forest-height.webm",
+    "type": "video"
+  },
+  "reference-caldwell73": {
+    "file": "/media/caldwell73.webm",
+    "type": "video"
+  },
+  "worldview-terra-truecolor": {
+    "file": "/media/worldview-terra-2024-06-01.jpg",
+    "type": "image"
+  },
+  "worldview-viirs-snpp-truecolor": {
+    "file": "/media/worldview-viirs-snpp-2024-09-22.jpg",
+    "type": "image"
+  },
+  "worldview-land-surface-temp": {
+    "file": "/media/worldview-land-surface-temp-2024-06-01.jpg",
+    "type": "image"
+  },
+  "worldview-airs-precipitation": {
+    "file": "/media/worldview-airs-precipitation-2024-06-01.jpg",
+    "type": "image"
+  }
+}

@@ -1,0 +1,19 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Earth Jukebox (3D Space Edition)</title>
+    <meta name="description" content="Earth Jukebox turns NASA Earth Information Center and Worldview visualizations into soundscapes. The sound is made from the colour and brightness of NASA's rendered pictures, not from NASA's raw measurements." />
+    <!-- Preload key NASA artwork and local fonts for instant zero-delay rendering -->
+    <link rel="preload" as="font" type="font/woff2" href="/fonts/instrumentsans-latin.woff2" crossorigin />
+    <link rel="preload" as="font" type="font/woff2" href="/fonts/unbounded-latin.woff2" crossorigin />
+    <link rel="preload" as="image" href="/media/night-lights-frame.jpg" />
+    <link rel="preload" as="image" href="/media/perpetual-ocean-2-frame.jpg" />
+    <link rel="preload" as="image" href="/media/geos-aerosols.jpg" />
+  </head>
+  <body>
+    <div id="root"></div>
+    <script type="module" src="/src/main.jsx"></script>
+  </body>
+</html>
