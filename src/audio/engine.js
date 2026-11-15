@@ -11,14 +11,19 @@ export class Sonifier {
     this.timeData = null
   }
 
-  // Unlock Web Audio for mobile browsers (iOS Safari & Android Chrome)
-  unlockAudio() {
+  // Ensure AudioContext is initialized and active
+  ensureContext() {
     if (!this.ctx) {
       this.ctx = new (window.AudioContext || window.webkitAudioContext)()
     }
     if (this.ctx && this.ctx.state === 'suspended') {
-      this.ctx.resume()
+      this.ctx.resume().catch(() => {})
     }
+  }
+
+  // Unlock Web Audio for mobile browsers (iOS Safari & Android Chrome)
+  unlockAudio() {
+    this.ensureContext()
     try {
       const buffer = this.ctx.createBuffer(1, 1, 22050)
       const source = this.ctx.createBufferSource()
@@ -29,17 +34,12 @@ export class Sonifier {
   }
 
   start(rowCount = 8, profile = {}) {
-    if (this.ctx) {
-      if (this.ctx.state === 'suspended') {
-        this.ctx.resume()
-      }
+    this.ensureContext()
+
+    // If voices have already been created, resume and reconfigure
+    if (this.voices && this.voices.length > 0) {
       this.reconfigure(profile)
       return
-    }
-
-    this.ctx = new (window.AudioContext || window.webkitAudioContext)()
-    if (this.ctx.state === 'suspended') {
-      this.ctx.resume()
     }
 
     // Master bus & Limiter
@@ -65,6 +65,7 @@ export class Sonifier {
     const oscType = profile.oscType || 'triangle'
     const resonanceQ = profile.resonanceQ || 1.5
 
+    this.voices = []
     for (let i = 0; i < rowCount; i++) {
       const osc = this.ctx.createOscillator()
       osc.type = oscType
@@ -142,7 +143,6 @@ export class Sonifier {
     const t = this.ctx.currentTime
     this.voices.forEach((s) => {
       try {
-        s.gain.gain.cancelScheduledValues(t)
         s.gain.gain.setTargetAtTime(0, t, 0.05)
       } catch (e) {}
     })

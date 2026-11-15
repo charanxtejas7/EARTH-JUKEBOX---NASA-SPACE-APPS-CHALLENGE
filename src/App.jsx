@@ -132,7 +132,7 @@ export default function App() {
   const [isStandInActive, setIsStandInActive] = useState(false)
 
   // Audio Engine Refs
-  const mediaRef = useRef(null)
+  const mediaRef = useRef(mediaCanvasRef.current)
   const synth = useRef(new Sonifier())
   const startedAt = useRef(0)
   const lastAnnounce = useRef(0)
@@ -540,6 +540,9 @@ export default function App() {
     setAnnounce(`Probed location at longitude ${Math.round(newProgress * 100)} percent. Sonifying local latitude band profile.`)
 
     if (mediaRef.current && synth.current) {
+      if (!synth.current.voices || !synth.current.voices.length) {
+        synth.current.start(config.rows, acousticProfile)
+      }
       const bands = readColumn(mediaRef.current, newProgress, config.rows)
       if (bands) {
         const nextVoices = bandsToVoices(bands, config)
