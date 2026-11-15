@@ -327,6 +327,23 @@ export default function App() {
     setAnnounce(`Switched track to ${track.title}. ${track.plainDescription}`)
   }
 
+  // Mobile browser audio unlock on first user touch/click
+  useEffect(() => {
+    const handleFirstTouch = () => {
+      if (synth.current) {
+        synth.current.unlockAudio()
+      }
+      window.removeEventListener('touchstart', handleFirstTouch)
+      window.removeEventListener('pointerdown', handleFirstTouch)
+    }
+    window.addEventListener('touchstart', handleFirstTouch, { passive: true })
+    window.addEventListener('pointerdown', handleFirstTouch, { passive: true })
+    return () => {
+      window.removeEventListener('touchstart', handleFirstTouch)
+      window.removeEventListener('pointerdown', handleFirstTouch)
+    }
+  }, [])
+
   // Play / Pause toggle
   const togglePlay = useCallback(() => {
     synth.current.start(config.rows, acousticProfile)

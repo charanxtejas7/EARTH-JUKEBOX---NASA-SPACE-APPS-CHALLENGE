@@ -6,6 +6,7 @@
   position: relative;
   width: 100vw;
   min-height: 100vh;
+  min-height: 100dvh;
   overflow-x: hidden;
   background-color: var(--bg);
   color: var(--ink);
@@ -18,8 +19,10 @@
   inset: 0;
   width: 100vw;
   height: 100vh;
+  height: 100dvh;
   z-index: 0;
   pointer-events: auto;
+  touch-action: none;
 }
 
 /* UI Overlay Grid */
@@ -28,10 +31,11 @@
   z-index: 10;
   pointer-events: none; /* Let 3D canvas receive drags unless hitting interactive UI */
   min-height: 100vh;
+  min-height: 100dvh;
   display: flex;
   flex-direction: column;
   justify-content: space-between;
-  padding: clamp(1.25rem, 3vw, 2.5rem);
+  padding: max(1rem, env(safe-area-inset-top)) max(1rem, env(safe-area-inset-right)) max(1rem, env(safe-area-inset-bottom)) max(1rem, env(safe-area-inset-left));
 }
 
 /* Top bar: Wordmark & Corner controls */
@@ -636,25 +640,36 @@
 /* Responsive: Mobile under 760px */
 @media (max-width: 760px) {
   .ui-overlay {
-    padding: 1rem;
+    padding: max(0.75rem, env(safe-area-inset-top)) max(0.75rem, env(safe-area-inset-right)) max(0.75rem, env(safe-area-inset-bottom)) max(0.75rem, env(safe-area-inset-left));
   }
 
   .top-bar {
     flex-direction: column;
-    gap: 0.75rem;
+    align-items: flex-start;
+    gap: 0.6rem;
   }
 
   .corner-actions {
     width: 100%;
-    justify-content: space-between;
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.4rem;
+    justify-content: flex-start;
+  }
+
+  .corner-btn {
+    padding: 0.32rem 0.65rem;
+    font-size: 0.76rem;
+    white-space: nowrap;
   }
 
   .main-hud {
     flex-direction: column;
     align-items: stretch;
     justify-content: flex-start;
-    gap: 1rem;
-    padding: 0.75rem 0;
+    gap: 0.6rem;
+    padding: 0.35rem 0;
+    pointer-events: none;
   }
 
   .track-list-nav {
@@ -662,17 +677,19 @@
     max-height: none;
     overflow-x: auto;
     overflow-y: hidden;
-    padding-bottom: 0.5rem;
+    padding-bottom: 0.4rem;
+    -webkit-overflow-scrolling: touch;
+    pointer-events: auto;
   }
 
   .track-list {
     flex-direction: row;
-    gap: 0.75rem;
+    gap: 0.6rem;
   }
 
   .track-btn {
     white-space: nowrap;
-    font-size: 0.95rem;
+    font-size: 0.88rem;
     transform: none !important;
   }
 
@@ -682,19 +699,19 @@
 
   .hud-ladder {
     width: 100%;
-    padding: 0.6rem 0.8rem;
+    padding: 0.45rem 0.65rem;
   }
 
   .ladder-list {
     display: grid;
     grid-template-columns: repeat(4, 1fr);
-    gap: 0.4rem;
+    gap: 0.35rem;
   }
 
   .ladder-row {
     grid-template-columns: auto 1fr;
     grid-template-rows: auto auto;
-    font-size: 0.7rem;
+    font-size: 0.68rem;
   }
 
   .ladder-freq {
@@ -708,7 +725,18 @@
   .bottom-hud {
     flex-direction: column;
     align-items: stretch;
-    gap: 1.2rem;
+    gap: 0.85rem;
+    pointer-events: none;
+  }
+
+  .now-showing-title {
+    font-size: clamp(1.15rem, 4.2vw, 1.55rem);
+    margin-bottom: 0.3rem;
+  }
+
+  .honest-science-notice {
+    font-size: 0.72rem;
+    line-height: 1.35;
   }
 
   .bottom-controls-cluster {
@@ -716,8 +744,9 @@
     min-width: 0;
     max-width: 100%;
     align-items: stretch;
-    gap: 0.65rem;
-    padding: 0.75rem 1rem;
+    gap: 0.55rem;
+    padding: 0.65rem 0.85rem;
+    pointer-events: auto;
   }
 
   .now-playing-hud {
@@ -725,26 +754,96 @@
     align-self: stretch;
     justify-content: space-between;
     flex-wrap: wrap;
-    gap: 0.6rem;
+    gap: 0.5rem;
     padding: 0;
   }
 
   .hud-controls {
     justify-content: space-between;
     width: 100%;
+    align-items: center;
   }
 
   .hud-controls-left {
     flex-wrap: wrap;
-    gap: 0.5rem;
+    gap: 0.4rem;
   }
 
   .play-circle-btn {
-    width: 48px;
-    height: 48px;
-    min-width: 48px;
-    min-height: 48px;
+    width: 46px;
+    height: 46px;
+    min-width: 46px;
+    min-height: 46px;
     font-size: 0.72rem;
+  }
+
+  /* Modals as mobile sheets */
+  .about-modal-panel, .sources-modal-panel {
+    left: 0.6rem;
+    right: 0.6rem;
+    width: auto;
+    bottom: max(0.6rem, env(safe-area-inset-bottom));
+    max-height: 75dvh;
+    padding: 1.15rem;
+  }
+
+  .tour-floating-card {
+    top: auto;
+    right: 0.6rem;
+    left: 0.6rem;
+    bottom: max(0.6rem, env(safe-area-inset-bottom));
+    width: auto;
+    max-height: 75dvh;
+    padding: 1.15rem;
+  }
+
+  .modal-backdrop, .executive-modal-backdrop {
+    padding: 0.5rem;
+    align-items: flex-end;
+  }
+
+  .discover-modal, .gallery-modal, .executive-modal-card {
+    width: 100%;
+    max-height: 85dvh;
+    border-radius: 16px 16px 8px 8px;
+    padding: 1.15rem;
+  }
+}
+
+/* Extra small screens under 480px (iPhone SE, compact Androids) */
+@media (max-width: 480px) {
+  .ladder-list {
+    grid-template-columns: repeat(2, 1fr);
+    gap: 0.3rem;
+  }
+
+  .now-playing-hud {
+    flex-direction: column;
+    align-items: stretch;
+    gap: 0.5rem;
+  }
+
+  .now-playing-actions {
+    justify-content: flex-end;
+    width: 100%;
+  }
+
+  .pill-btn, .pill-select {
+    padding: 0.35rem 0.65rem;
+    font-size: 0.76rem;
+  }
+
+  .pill-dot {
+    width: 5px;
+    height: 5px;
+  }
+
+  .play-circle-btn {
+    width: 42px;
+    height: 42px;
+    min-width: 42px;
+    min-height: 42px;
+    font-size: 0.68rem;
   }
 }
 /* Appended Discover NASA, Sound Gallery, Now Playing HUD, and Tour Styles */
@@ -1816,8 +1915,8 @@
 
 @media (max-width: 640px) {
   .globe-accessible-nav {
-    top: auto;
-    bottom: 5.5rem;
+    top: max(4.6rem, calc(env(safe-area-inset-top) + 4.2rem));
+    bottom: auto;
     right: 0.75rem;
   }
 }

@@ -234,6 +234,7 @@ export default function SpaceScene({
     renderer.setPixelRatio(Math.min(window.devicePixelRatio || 1, 2))
     renderer.setSize(width, height)
     renderer.setClearColor(0x17114a, 1.0)
+    renderer.domElement.style.touchAction = 'none'
     container.appendChild(renderer.domElement)
 
     // Starfield
@@ -484,8 +485,8 @@ export default function SpaceScene({
       )
       dragRef.current.isDragging = false
 
-      // Interactive Click-to-Probe / Audio Seek on both 3D Globe and Flat Map
-      if (moved < 7 && onSeekRef.current && (e.target.tagName === 'CANVAS') && container) {
+      // Interactive Click-to-Probe / Audio Seek on both 3D Globe and Flat Map (forgiving threshold for mobile taps)
+      if (moved < 16 && onSeekRef.current && (e.target.tagName === 'CANVAS') && container) {
         const rect = container.getBoundingClientRect()
         const clickX = ((e.clientX - rect.left) / rect.width) * 2 - 1
         const clickY = -((e.clientY - rect.top) / rect.height) * 2 + 1
@@ -592,15 +593,21 @@ export default function SpaceScene({
         planeSpikesGroupRef.current.visible = t > 0.005
       }
 
-      // Unified camera position and lookAt (Globe view 0.2, 0, 3.4 <-> Flat Map view 0.35, 0, 3.05)
+      // Unified camera position and lookAt (Responsive framing for mobile screens)
       if (!prefersReduced) {
-        const targetCamX = THREE.MathUtils.lerp(0.2 + pointerRef.current.curX, 0.35, t)
+        const isMobileScreen = window.innerWidth <= 768
+        const globeX = isMobileScreen ? 0.0 : 0.2
+        const globeZ = isMobileScreen ? 3.7 : 3.4
+        const flatX = isMobileScreen ? 0.0 : 0.35
+        const flatZ = isMobileScreen ? 3.25 : 3.05
+
+        const targetCamX = THREE.MathUtils.lerp(globeX + pointerRef.current.curX, flatX, t)
         const targetCamY = pointerRef.current.curY * (1.0 - t * 0.7)
-        const targetCamZ = THREE.MathUtils.lerp(3.4, 3.05, t)
+        const targetCamZ = THREE.MathUtils.lerp(globeZ, flatZ, t)
         camera.position.x += (targetCamX - camera.position.x) * 0.12
         camera.position.y += (targetCamY - camera.position.y) * 0.12
         camera.position.z += (targetCamZ - camera.position.z) * 0.12
-        camera.lookAt(THREE.MathUtils.lerp(0.2, 0.35, t), 0, 0)
+        camera.lookAt(THREE.MathUtils.lerp(globeX, flatX, t), isMobileScreen ? 0.06 : 0, 0)
       }
 
       // ONLY re-upload texture if video is actively playing (ELIMINATES FRAME FREEZES)

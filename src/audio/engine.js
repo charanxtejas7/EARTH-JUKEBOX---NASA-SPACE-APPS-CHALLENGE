@@ -11,14 +11,36 @@ export class Sonifier {
     this.timeData = null
   }
 
+  // Unlock Web Audio for mobile browsers (iOS Safari & Android Chrome)
+  unlockAudio() {
+    if (!this.ctx) {
+      this.ctx = new (window.AudioContext || window.webkitAudioContext)()
+    }
+    if (this.ctx && this.ctx.state === 'suspended') {
+      this.ctx.resume()
+    }
+    try {
+      const buffer = this.ctx.createBuffer(1, 1, 22050)
+      const source = this.ctx.createBufferSource()
+      source.buffer = buffer
+      source.connect(this.ctx.destination)
+      source.start(0)
+    } catch (e) {}
+  }
+
   start(rowCount = 8, profile = {}) {
     if (this.ctx) {
-      this.ctx.resume()
+      if (this.ctx.state === 'suspended') {
+        this.ctx.resume()
+      }
       this.reconfigure(profile)
       return
     }
 
     this.ctx = new (window.AudioContext || window.webkitAudioContext)()
+    if (this.ctx.state === 'suspended') {
+      this.ctx.resume()
+    }
 
     // Master bus & Limiter
     this.master = this.ctx.createGain()
