@@ -77,9 +77,13 @@ export class Sonifier {
       const gain = this.ctx.createGain()
       gain.gain.value = 0
 
-      const pan = this.ctx.createStereoPanner()
+      const pan = typeof this.ctx.createStereoPanner === 'function' ? this.ctx.createStereoPanner() : null
 
-      osc.connect(filter).connect(gain).connect(pan).connect(this.master)
+      if (pan) {
+        osc.connect(filter).connect(gain).connect(pan).connect(this.master)
+      } else {
+        osc.connect(filter).connect(gain).connect(this.master)
+      }
       osc.start()
       this.voices.push({ osc, filter, gain, pan })
     }
@@ -114,7 +118,9 @@ export class Sonifier {
       slot.filter.frequency.setTargetAtTime(cutoffHz, t, glide)
 
       // Stereo panning from west to east
-      slot.pan.pan.setTargetAtTime(x01 * 2 - 1, t, glide)
+      if (slot.pan && slot.pan.pan) {
+        slot.pan.pan.setTargetAtTime(x01 * 2 - 1, t, glide)
+      }
     })
   }
 
@@ -134,7 +140,12 @@ export class Sonifier {
   silence() {
     if (!this.ctx) return
     const t = this.ctx.currentTime
-    this.voices.forEach((s) => s.gain.gain.setTargetAtTime(0, t, 0.05))
+    this.voices.forEach((s) => {
+      try {
+        s.gain.gain.cancelScheduledValues(t)
+        s.gain.gain.setTargetAtTime(0, t, 0.05)
+      } catch (e) {}
+    })
   }
 }
 
@@ -166,9 +177,13 @@ export async function renderSoundscapeWav(readColumnFn, mediaEl, config, duratio
     filter.Q.value = config.resonanceQ || 1.5
     const gain = offlineCtx.createGain()
     gain.gain.value = 0
-    const pan = offlineCtx.createStereoPanner()
+    const pan = typeof offlineCtx.createStereoPanner === 'function' ? offlineCtx.createStereoPanner() : null
 
-    osc.connect(filter).connect(gain).connect(master)
+    if (pan) {
+      osc.connect(filter).connect(gain).connect(pan).connect(master)
+    } else {
+      osc.connect(filter).connect(gain).connect(master)
+    }
     osc.start(0)
     voices.push({ osc, filter, gain, pan })
   }
@@ -188,7 +203,9 @@ export async function renderSoundscapeWav(readColumnFn, mediaEl, config, duratio
       slot.osc.frequency.setValueAtTime(v.freq, t)
       slot.gain.gain.setValueAtTime(v.gain, t)
       slot.filter.frequency.setValueAtTime(350 + v.warmth * 3800, t)
-      slot.pan.pan.setValueAtTime(x01 * 2 - 1, t)
+      if (slot.pan && slot.pan.pan) {
+        slot.pan.pan.setValueAtTime(x01 * 2 - 1, t)
+      }
     })
   }
 

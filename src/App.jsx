@@ -344,6 +344,42 @@ export default function App() {
     }
   }, [])
 
+  // Handle tab visibility change & foreground/background transitions (battery & audio safety)
+  useEffect(() => {
+    const handleVisibilityChange = () => {
+      if (document.hidden) {
+        if (synth.current) {
+          synth.current.silence()
+        }
+        if (hiddenVideoRef.current && !hiddenVideoRef.current.paused) {
+          hiddenVideoRef.current.pause()
+        }
+      } else {
+        if (playing && synth.current) {
+          if (synth.current.ctx && synth.current.ctx.state === 'suspended') {
+            synth.current.ctx.resume().catch(() => {})
+          }
+          startedAt.current = performance.now() - progress * config.sweepSeconds * 1000
+          if (hiddenVideoRef.current && hiddenVideoRef.current.paused) {
+            hiddenVideoRef.current.play().catch(() => {})
+          }
+        }
+      }
+    }
+
+    const handlePageHide = () => {
+      if (synth.current) synth.current.silence()
+    }
+
+    document.addEventListener('visibilitychange', handleVisibilityChange)
+    window.addEventListener('pagehide', handlePageHide)
+
+    return () => {
+      document.removeEventListener('visibilitychange', handleVisibilityChange)
+      window.removeEventListener('pagehide', handlePageHide)
+    }
+  }, [playing, progress, config.sweepSeconds])
+
   // Play / Pause toggle
   const togglePlay = useCallback(() => {
     synth.current.start(config.rows, acousticProfile)

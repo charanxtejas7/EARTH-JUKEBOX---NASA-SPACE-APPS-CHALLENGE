@@ -444,9 +444,11 @@ export default function SpaceScene({
       const h = container.clientHeight || window.innerHeight
       camera.aspect = w / h
       camera.updateProjectionMatrix()
+      renderer.setPixelRatio(Math.min(window.devicePixelRatio || 1, 2))
       renderer.setSize(w, h)
     }
     window.addEventListener('resize', handleResize)
+    window.addEventListener('orientationchange', handleResize)
 
     function handlePointerMove(e) {
       const normX = (e.clientX / window.innerWidth) * 2 - 1
@@ -702,6 +704,7 @@ export default function SpaceScene({
     return () => {
       cancelAnimationFrame(animId)
       window.removeEventListener('resize', handleResize)
+      window.removeEventListener('orientationchange', handleResize)
       window.removeEventListener('pointermove', handlePointerMove)
       window.removeEventListener('pointerdown', handlePointerDown)
       window.removeEventListener('pointerup', handlePointerUp)

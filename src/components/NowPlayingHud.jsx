@@ -22,28 +22,37 @@ export default function NowPlayingHud({
     timbreName: 'Orbital Harmonics',
   }
 
-  // Mini oscilloscope animation
+  // Mini oscilloscope animation (battery-optimized: halts RAF when paused or hidden)
   useEffect(() => {
     let animId
     const canvas = canvasRef.current
     if (!canvas) return
     const ctx = canvas.getContext('2d')
 
+    function drawResting() {
+      ctx.fillStyle = 'rgba(15, 10, 51, 1)'
+      ctx.fillRect(0, 0, canvas.width, canvas.height)
+      ctx.strokeStyle = '#c3b8ea'
+      ctx.lineWidth = 1.5
+      ctx.beginPath()
+      ctx.moveTo(0, canvas.height / 2)
+      ctx.lineTo(canvas.width, canvas.height / 2)
+      ctx.stroke()
+    }
+
+    if (!playing || !synthRef?.current) {
+      drawResting()
+      return
+    }
+
     function draw() {
+      if (document.hidden) {
+        animId = requestAnimationFrame(draw)
+        return
+      }
       animId = requestAnimationFrame(draw)
       ctx.fillStyle = 'rgba(15, 10, 51, 0.4)'
       ctx.fillRect(0, 0, canvas.width, canvas.height)
-
-      if (!playing || !synthRef?.current) {
-        // Flat resting line
-        ctx.strokeStyle = '#c3b8ea'
-        ctx.lineWidth = 1.5
-        ctx.beginPath()
-        ctx.moveTo(0, canvas.height / 2)
-        ctx.lineTo(canvas.width, canvas.height / 2)
-        ctx.stroke()
-        return
-      }
 
       const wave = synthRef.current.getWaveform()
       if (!wave) return
@@ -68,7 +77,9 @@ export default function NowPlayingHud({
     }
 
     draw()
-    return () => cancelAnimationFrame(animId)
+    return () => {
+      if (animId) cancelAnimationFrame(animId)
+    }
   }, [playing, synthRef])
 
   const handleDownloadWav = async () => {
